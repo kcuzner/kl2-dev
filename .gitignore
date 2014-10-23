@@ -1,0 +1,10 @@
+# kicad
+
+*.bak
+*.bck
+*.net
+*.kicad_pcb-bak
+
+# gedit
+*~
+

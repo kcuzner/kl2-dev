@@ -1,0 +1,108 @@
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Thu 23 Oct 2014 12:28:35 AM MDT
+
+BeginCmp
+TimeStamp = /5448963F;
+Reference = C1;
+ValeurCmp = .1u;
+IdModule  = SM0603_Capa;
+EndCmp
+
+BeginCmp
+TimeStamp = /5448957F;
+Reference = C2;
+ValeurCmp = 4.7n;
+IdModule  = SM0603_Capa;
+EndCmp
+
+BeginCmp
+TimeStamp = /5448964E;
+Reference = C3;
+ValeurCmp = .1u;
+IdModule  = SM0603_Capa;
+EndCmp
+
+BeginCmp
+TimeStamp = /5448965D;
+Reference = C4;
+ValeurCmp = 2.2u;
+IdModule  = SM0603_Capa;
+EndCmp
+
+BeginCmp
+TimeStamp = /54489B6E;
+Reference = C5;
+ValeurCmp = 20p;
+IdModule  = SM0603_Capa;
+EndCmp
+
+BeginCmp
+TimeStamp = /54489B7D;
+Reference = C6;
+ValeurCmp = 20p;
+IdModule  = SM0603_Capa;
+EndCmp
+
+BeginCmp
+TimeStamp = /544894C7;
+Reference = CON1;
+ValeurCmp = USB-MINI-B;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /544898F4;
+Reference = D1;
+ValeurCmp = DIODE;
+IdModule  = ;
+EndCmp
+
+BeginCmp
+TimeStamp = /54489EC5;
+Reference = P1;
+ValeurCmp = CONN_13;
+IdModule  = 1x13;
+EndCmp
+
+BeginCmp
+TimeStamp = /54489ED4;
+Reference = P2;
+ValeurCmp = CONN_13;
+IdModule  = 1x13;
+EndCmp
+
+BeginCmp
+TimeStamp = /54489598;
+Reference = R1;
+ValeurCmp = 1meg;
+IdModule  = SM0603_Resistor;
+EndCmp
+
+BeginCmp
+TimeStamp = /54489783;
+Reference = R2;
+ValeurCmp = 0;
+IdModule  = SM0603_Resistor;
+EndCmp
+
+BeginCmp
+TimeStamp = /54489B96;
+Reference = R3;
+ValeurCmp = R;
+IdModule  = SM0603_Resistor;
+EndCmp
+
+BeginCmp
+TimeStamp = /544894B8;
+Reference = U1;
+ValeurCmp = MKL26Z32VFM4;
+IdModule  = QFN32-5x5;
+EndCmp
+
+BeginCmp
+TimeStamp = /54489BAA;
+Reference = X1;
+ValeurCmp = CRYSTAL;
+IdModule  = HC-49V;
+EndCmp
+
+EndListe
