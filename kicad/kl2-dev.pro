@@ -1,4 +1,4 @@
-update=Thu 23 Oct 2014 12:28:20 AM MDT
+update=Thu 23 Oct 2014 10:28:34 AM MDT
 version=1
 last_client=cvpcb
 [pcbnew]
@@ -38,6 +38,7 @@ LibName14=dip_sockets
 LibName15=pga_sockets
 LibName16=valves
 LibName17=pin_header
+LibName18=kl2-dev
 LibDir=
 [general]
 version=1

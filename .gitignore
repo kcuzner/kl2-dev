@@ -4,6 +4,7 @@
 *.bck
 *.net
 *.kicad_pcb-bak
+kicad/$*
 
 # gedit
 *~

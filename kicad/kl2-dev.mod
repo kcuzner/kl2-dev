@@ -1,0 +1,97 @@
+PCBNEW-LibModule-V1  Thu 23 Oct 2014 10:26:49 AM MDT
+# encoding utf-8
+Units mm
+$INDEX
+USB-MICRO-B
+$EndINDEX
+$MODULE USB-MICRO-B
+Po 0 0 0 15 54492C3D 00000000 ~~
+Li USB-MICRO-B
+Sc 0
+AR 
+Op 0 0 0
+T0 0 -7 1 1 0 0.15 N I 21 N "USB-MICRO-B"
+T1 0 -5.1 1 1 0 0.15 N V 21 N "VAL**"
+DS 4.5 1.4 4.5 -4 0.15 21
+DS 4.5 -4 2 -4 0.15 21
+DS -4.5 1.4 -4.5 -4 0.15 21
+DS -4.5 -4 -2 -4 0.15 21
+$PAD
+Sh "6" R 1.9 1.9 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -1.2 0
+$EndPAD
+$PAD
+Sh "7" R 1.9 1.9 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 1.2 0
+$EndPAD
+$PAD
+Sh "8" R 1.6 1.4 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -3.2 -2.65
+$EndPAD
+$PAD
+Sh "9" R 1.6 1.4 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 3.2 -2.65
+$EndPAD
+$PAD
+Sh "3" R 0.4 1.35 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0 -2.875
+$EndPAD
+$PAD
+Sh "4" R 0.4 1.35 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 0.65 -2.875
+$EndPAD
+$PAD
+Sh "2" R 0.4 1.35 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -0.65 -2.875
+$EndPAD
+$PAD
+Sh "1" R 0.4 1.35 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po -1.3 -2.875
+$EndPAD
+$PAD
+Sh "5" R 0.4 1.35 0 0 0
+Dr 0 0 0
+At SMD N 00888000
+Ne 0 ""
+Po 1.3 -2.875
+$EndPAD
+$PAD
+Sh "10" O 0.9 1.6 0 0 0
+Dr 0.5 0 0 O 0.5 1.2
+At STD N 00E0FFFF
+Ne 0 ""
+Po -3.5 0
+$EndPAD
+$PAD
+Sh "11" O 0.9 1.6 0 0 0
+Dr 0.5 0 0 O 0.5 1.2
+At STD N 00E0FFFF
+Ne 0 ""
+Po 3.5 0
+$EndPAD
+$EndMODULE USB-MICRO-B
+$EndLIBRARY
