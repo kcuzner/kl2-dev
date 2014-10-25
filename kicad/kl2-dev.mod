@@ -1,4 +1,4 @@
-PCBNEW-LibModule-V1  Fri 24 Oct 2014 10:26:25 PM MDT
+PCBNEW-LibModule-V1  Sat 25 Oct 2014 09:57:51 AM MDT
 # encoding utf-8
 Units mm
 $INDEX
@@ -82,7 +82,7 @@ Po 0 0
 $EndPAD
 $EndMODULE THERM5x5
 $MODULE USB-MICRO-B
-Po 0 0 0 15 544B160A 00000000 ~~
+Po 0 0 0 15 544BC855 00000000 ~~
 Li USB-MICRO-B
 Sc 0
 AR 
@@ -157,15 +157,15 @@ Ne 0 ""
 Po 1.3 -2.875
 $EndPAD
 $PAD
-Sh "10" O 0.9 1.6 0 0 0
-Dr 0.5 0 0 O 0.5 1.2
+Sh "10" C 1.6 1.6 0 0 0
+Dr 1.2 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po -3.5 0
 $EndPAD
 $PAD
-Sh "11" O 0.9 1.6 0 0 0
-Dr 0.5 0 0 O 0.5 1.2
+Sh "11" C 1.6 1.6 0 0 0
+Dr 1.2 0 0
 At STD N 00E0FFFF
 Ne 0 ""
 Po 3.5 0
