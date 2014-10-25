@@ -7,6 +7,9 @@
 kicad/$*
 kicad/gerber
 
+#libreoffice
+*.~lock*
+
 # gedit
 *~
 
