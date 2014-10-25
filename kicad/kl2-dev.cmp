@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Thu 23 Oct 2014 10:29:25 AM MDT
+Cmp-Mod V01 Created by CvPcb (2013-may-18)-stable date = Fri 24 Oct 2014 09:11:43 PM MDT
 
 BeginCmp
 TimeStamp = /5448963F;
@@ -53,7 +53,7 @@ BeginCmp
 TimeStamp = /544898F4;
 Reference = D1;
 ValeurCmp = DIODE;
-IdModule  = ;
+IdModule  = SOD323;
 EndCmp
 
 BeginCmp
@@ -68,6 +68,13 @@ TimeStamp = /54489ED4;
 Reference = P2;
 ValeurCmp = CONN_13;
 IdModule  = 1x13;
+EndCmp
+
+BeginCmp
+TimeStamp = /544956A3;
+Reference = P3;
+ValeurCmp = TST;
+IdModule  = ;
 EndCmp
 
 BeginCmp
