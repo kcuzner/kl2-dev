@@ -3,7 +3,7 @@
   (general
     (links 58)
     (no_connects 1)
-    (area 34.874999 48.844999 69.265001 67.995001)
+    (area 33.349767 46.7335 69.265001 69.4674)
     (thickness 1.6)
     (drawings 7)
     (tracks 261)
@@ -14,10 +14,10 @@
 
   (page A3)
   (layers
-    (15 F.Cu signal hide)
-    (0 B.Cu signal hide)
+    (15 F.Cu signal)
+    (0 B.Cu signal)
     (16 B.Adhes user)
-    (17 F.Adhes user hide)
+    (17 F.Adhes user)
     (18 B.Paste user)
     (19 F.Paste user)
     (20 B.SilkS user)
@@ -59,7 +59,7 @@
     (aux_axis_origin 0 0)
     (visible_elements FFFFFFBF)
     (pcbplotparams
-      (layerselection 3178497)
+      (layerselection 284196865)
       (usegerberextensions true)
       (excludeedgelayer true)
       (linewidth 0.150000)
@@ -81,9 +81,9 @@
       (subtractmaskfromsilk false)
       (outputformat 1)
       (mirror false)
-      (drillshape 1)
+      (drillshape 0)
       (scaleselection 1)
-      (outputdirectory ""))
+      (outputdirectory gerber/))
   )
 
   (net 0 "")

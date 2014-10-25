@@ -5,6 +5,7 @@
 *.net
 *.kicad_pcb-bak
 kicad/$*
+kicad/gerber
 
 # gedit
 *~
