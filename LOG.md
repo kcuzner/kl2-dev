@@ -83,7 +83,7 @@ done and over the past couple days I have discovered:
    manual is the several thousand page document that I really want. The
    datasheet is the per-part summary of the electrical and timing
    characteristics.
- * The chip I have chosen and bought (MK26Z32VFM4) does not have an EzPort and
+ * The chip I have chosen and bought (MKL26Z32VFM4) does not have an EzPort and
    will need to be programmed via JTAG or SWD
  * The McHck is very similar to this and uses a bus pirate for programming. I
    will need to purchase a bus pirate.
