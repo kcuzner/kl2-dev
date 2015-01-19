@@ -44,11 +44,14 @@ RM = rm -rf
 ## Build process
 
 OBJ := $(addprefix $(OBJDIR)/,$(notdir $(SRC:.c=.o)))
-OBJ += $(addprefix $(OBJDIR)/,$(notdir $(ASM:.s=.o)))
+OBJ += $(addprefix $(OBJDIR)/,$(notdir $(ASM:.S=.o)))
 
 all:: $(BINDIR)/$(PROJECT).hex
 
 Build: $(BINDIR)/$(PROJECT).hex
+
+list: $(BINDIR)/$(PROJECT).elf
+	$(OBJDUMP) -d $(BINDIR)/$(PROJECT).elf > $(BINDIR)/$(PROJECT).lst
 
 depend: .depend
 
@@ -78,6 +81,6 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(GCFLAGS) -c $< -o $@
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.s
+$(OBJDIR)/%.o: $(SRCDIR)/%.S
 	@mkdir -p $(dir $@)
 	$(AS) $(ASFLAGS) -o $@ $<

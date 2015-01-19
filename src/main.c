@@ -3,6 +3,7 @@
  */
 
 #include "MKL26Z4.h"
+#include "common.h"
 
 int main(void)
 {
