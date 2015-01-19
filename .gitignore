@@ -13,3 +13,8 @@ kicad/gerber
 # gedit
 *~
 
+# build
+bin
+obj
+.depend
+
