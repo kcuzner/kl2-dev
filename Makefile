@@ -53,13 +53,8 @@ Build: $(BINDIR)/$(PROJECT).hex
 list: $(BINDIR)/$(PROJECT).elf
 	$(OBJDUMP) -d $(BINDIR)/$(PROJECT).elf > $(BINDIR)/$(PROJECT).lst
 
-depend: .depend
-
-.depend: $(SRC)
-	@$(RM) ./.depend
-	$(CC) $(GCFLAGS) -MM $^ -MF  ./.depend
-
-include .depend
+size: $(BINDIR)/$(PROJECT).elf
+	$(SIZE) $(BINDIR)/$(PROJECT).elf
 
 $(BINDIR)/$(PROJECT).hex: $(BINDIR)/$(PROJECT).elf
 	$(OBJCOPY) -R .stack -O ihex $(BINDIR)/$(PROJECT).elf $(BINDIR)/$(PROJECT).hex
@@ -72,7 +67,6 @@ $(BINDIR)/$(PROJECT).elf: $(OBJ)
 cleanBuild: clean
 
 clean:
-	$(RM) ./.depend
 	$(RM) $(BINDIR)
 	$(RM) $(OBJDIR)
 
