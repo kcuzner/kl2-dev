@@ -25,7 +25,7 @@ INCLUDE = -I$(INCDIR)
 LSCRIPT = kl2-dev.ld
 
 # C Flags
-GCFLAGS  = -Wall -fno-common -mthumb -mcpu=$(CPU)
+GCFLAGS  = -Wall -fno-common -mthumb -mcpu=$(CPU) -O3
 GCFLAGS += $(INCLUDE)
 LDFLAGS += -nostartfiles -T$(LSCRIPT) -mthumb -mcpu=$(CPU)
 ASFLAGS += -mcpu=$(CPU)

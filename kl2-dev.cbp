@@ -18,6 +18,7 @@
 		<Unit filename="Makefile" />
 		<Unit filename="include/MKL26Z4.h" />
 		<Unit filename="include/arm_cm0p.h" />
+		<Unit filename="include/bootloader.h" />
 		<Unit filename="include/common.h" />
 		<Unit filename="include/sysinit.h" />
 		<Unit filename="kl2-dev.ld" />

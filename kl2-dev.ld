@@ -34,12 +34,15 @@ _top_stack = (0x1ffffc00+4K);
  */
 TOTAL_RESERVED_HEAP = 0;
 
-/**
- * Define bootloader ram size
- */
-
 EXTERN(__interrupt_vector_table);
 EXTERN(__flash_config);
+
+/**
+ * Prevent the bootloader from accessing the sections that it lives on top of
+ */
+
+NOCROSSREFS(.bootloader .data);
+NOCROSSREFS(.bootloader .bss);
 
 SECTIONS
 {
