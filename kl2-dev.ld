@@ -35,6 +35,7 @@ _top_stack = (0x1ffffc00+4K);
 TOTAL_RESERVED_HEAP = 0;
 
 EXTERN(__interrupt_vector_table);
+EXTERN(__flash_config);
 
 SECTIONS
 {
@@ -44,6 +45,11 @@ SECTIONS
         /* Insert the interrupt vector table first */
         __interrupt_vector_table = .;
         *(.interrupt_vector_table)
+
+        /* The flash configuration section must be located at a specific point */
+        . = 0x0400;
+        __flash_config = .;
+        *(.flash_config)
 
         /* Startup assembly */
         *(.startup)
