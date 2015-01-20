@@ -92,17 +92,10 @@ SECTIONS
      */
     . = ORIGIN(sram);
 
-    /*  From generic.ld, supplied by CodeSourcery  */
-    /* .ARM.exidx is sorted, so has to go in its own output section.  */
-    PROVIDE_HIDDEN (__exidx_start = .);
-    .ARM.exidx :
-    {
-        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-    }
-    PROVIDE_HIDDEN (__exidx_end = .);
-
     /**
      * The bootloader and general ram live in the same area of memory
+     * NOTE: The bootloader gets its own special RAM space and it lives on top
+     * of both .data and .bss.
      */
 
     _shared_start = .;
@@ -111,8 +104,11 @@ SECTIONS
         /* We keep the bootloader and its data together */
         _start_bootloader_flash = LOADADDR(.bootloader);
         _start_bootloader = .;
+        *(.bootloader.data)
+        *(.bootloader.data.*)
+        . = ALIGN(1024); /* Interrupt vector tables must be aligned to a 1024-byte boundary */
+        *(.bootloader.interrupt_vector_table)
         *(.bootloader)
-        *(.bootloader.*)
         _end_bootloader = .;
     }
 
@@ -125,13 +121,12 @@ SECTIONS
         *(.shdata)
         _end_data = .;
     }
-    . = _shared_start + MAX (SIZEOF (.data), SIZEOF (.bootloader));
-    _end_shared = .;
+    . = _shared_start + SIZEOF (.data);
     _bootloader_size = _end_bootloader - _start_bootloader;
     _data_size = _end_data - _start_data;
 
     /**
-     * Anything past this point is not ever initialized other than to zeros
+     * Zero intialization section
      */
 
     .noinit ALIGN(4) :
@@ -150,6 +145,26 @@ SECTIONS
     PROVIDE(_end_bss = .);				/* make value of _end_bss available externally */
 
     bss_size = _end_bss - _start_bss;
+
+    /**
+     * The following section lives after bootstrap, data, and bss so that it can
+     * be shared between both the bootloader and the user program
+     */
+
+    . = MAX(., _shared_start + MAX(SIZEOF(.data), SIZEOF(.bootloader)));
+
+    /*  From generic.ld, supplied by CodeSourcery  */
+    /* .ARM.exidx is sorted, so has to go in its own output section.  */
+    PROVIDE_HIDDEN (__exidx_start = .);
+    .ARM.exidx :
+    {
+        *(.ARM.exidx* .gnu.linkonce.armexidx.*)
+    }
+    PROVIDE_HIDDEN (__exidx_end = .);
+
+    /**
+     * END OF DATA, BEGINNING OF MAX STACK
+     */
 
     /* Stack can grow down to here, right after data and bss sections in
      * SRAM */
