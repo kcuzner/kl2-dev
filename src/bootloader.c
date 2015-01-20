@@ -26,10 +26,9 @@ extern uint32_t _bootloader_size; //NOTE: This points to a location correspondin
 extern uint32_t __interrupt_vector_table;
 extern uint32_t __bootloader_interrupt_vector_table;
 
-static void bootloader_run(void);
-static void bootloader_test(void);
+static void bootloader_main(void);
 
-void bootloader_init(void)
+void bootloader_run(void)
 {
     //Start by copying the bootloader and its data into RAM
     //NOTE: This possibly destroys all .data and .bss
@@ -47,7 +46,7 @@ void bootloader_init(void)
     VTOR_SET(&__bootloader_interrupt_vector_table);
 
     //Run the bootloader
-    bootloader_run();
+    bootloader_main();
 
     //RAM is now dirty, but the stack should be ok
     //TODO: This should really be done in assembly to avoid dirty RAM bugs
@@ -64,13 +63,7 @@ void bootloader_init(void)
 
 int __attribute__((section(".bootloader.data"))) bootloaderData = 4;
 
-void bootloader_Reset_Handler(void) __attribute__((alias("bootloader_run")));
-static void __attribute__ ((section(".bootloader"))) bootloader_run(void)
-{
-    bootloader_test();
-    bootloader_test();
-}
-
-static void __attribute__ ((section(".bootloader"))) bootloader_test(void)
+void bootloader_Reset_Handler(void) __attribute__((alias("bootloader_main")));
+static void __attribute__ ((section(".bootloader"))) bootloader_main(void)
 {
 }
