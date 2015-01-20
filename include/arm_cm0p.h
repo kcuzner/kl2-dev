@@ -31,6 +31,19 @@ typedef volatile uint8		vuint8;  /*  8 bits */
 typedef volatile uint16		vuint16; /* 16 bits */
 typedef volatile uint32		vuint32; /* 32 bits */
 
+/**
+ * Clock setup
+ */
+#define CLK0_FREQ_HZ 4000000
+#define LOW_POWER 1
+#define CLK0_TYPE 0
+#define PLL0_PRDIV 1
+#define PLL0_VDIV 1
+#define MCGOUT 0
+#define OUTDIV1_VAL 0
+#define OUTDIV4_VAL 0
+
+
 /*
  * NVIC Macros
  */

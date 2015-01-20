@@ -34,6 +34,10 @@ _top_stack = (0x1ffffc00+4K);
  */
 TOTAL_RESERVED_HEAP = 0;
 
+/**
+ * Define bootloader ram size
+ */
+
 EXTERN(__interrupt_vector_table);
 EXTERN(__flash_config);
 
@@ -75,6 +79,7 @@ SECTIONS
         *(.fini)					/* added */
         . = ALIGN(4);
         _end_data_flash = .;
+        _end_flash = .;
     } >flash
 
     /**
@@ -82,13 +87,10 @@ SECTIONS
      */
 
     /**
-     * If the vectors are moved into RAM, they must live on a 1024-byte boundary
+     * In order to have the bootloader work properly, we need to start in the
+     * ram rather than packing things using >sram
      */
-    .RAMVectorTable :
-    {
-        *(.RAMVectorTable)
-    }
-    . = ALIGN(4);
+    . = ORIGIN(sram);
 
     /*  From generic.ld, supplied by CodeSourcery  */
     /* .ARM.exidx is sorted, so has to go in its own output section.  */
@@ -96,10 +98,25 @@ SECTIONS
     .ARM.exidx :
     {
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-    } >sram
+    }
     PROVIDE_HIDDEN (__exidx_end = .);
 
-    .data :
+    /**
+     * The bootloader and general ram live in the same area of memory
+     */
+
+    _shared_start = .;
+    .bootloader _shared_start : AT(_end_flash)
+    {
+        /* We keep the bootloader and its data together */
+        _start_bootloader_flash = LOADADDR(.bootloader);
+        _start_bootloader = .;
+        *(.bootloader)
+        *(.bootloader.*)
+        _end_bootloader = .;
+    }
+
+    .data _shared_start : AT(_end_flash + SIZEOF(.bootloader))
     {
         _start_data_flash = LOADADDR(.data);
         _start_data = .;
@@ -107,24 +124,29 @@ SECTIONS
         *(.data.*)
         *(.shdata)
         _end_data = .;
-    } >sram  AT>flash
-    . = ALIGN(4);
+    }
+    . = _shared_start + MAX (SIZEOF (.data), SIZEOF (.bootloader));
+    _end_shared = .;
+    _bootloader_size = _end_bootloader - _start_bootloader;
     _data_size = _end_data - _start_data;
 
-    .noinit :
+    /**
+     * Anything past this point is not ever initialized other than to zeros
+     */
+
+    .noinit ALIGN(4) :
     {
         *(.noinit)
         *(.noinit.*)
-    } >sram
+    }
 
     _start_bss = .;
-    .bss :
+    .bss ALIGN(4) :
     {
         *(.bss)
         *(.bss.*)
         *(COMMON)
-    } >sram
-    . = ALIGN(4);
+    }
     PROVIDE(_end_bss = .);				/* make value of _end_bss available externally */
 
     bss_size = _end_bss - _start_bss;
@@ -133,22 +155,6 @@ SECTIONS
      * SRAM */
     _start_stack = _top_stack - TOTAL_RESERVED_STACK;
     _top_stack = _top_stack;			/* just to make the map file easier to read */
-
-    /*
-     *  If you want a heap, declare it here.
-     */
-    /*
-    .heap :
-    {
-        PROVIDE(_startHeap = .);
-        *(.heap)
-        . += TOTAL_RESERVED_HEAP;
-        . = ALIGN(4);
-        PROVIDE(_endHeap = .);
-    } > ahbsram1
-    */
-
-
 
     /* Linker wants .eh_frame section defined because of gcc 4.4.X bug,
     * just discard it here. */

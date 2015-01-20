@@ -51,7 +51,7 @@ all:: $(BINDIR)/$(PROJECT).hex
 Build: $(BINDIR)/$(PROJECT).hex
 
 list: $(BINDIR)/$(PROJECT).elf
-	$(OBJDUMP) -d $(BINDIR)/$(PROJECT).elf > $(BINDIR)/$(PROJECT).lst
+	$(OBJDUMP) -D $(BINDIR)/$(PROJECT).elf > $(BINDIR)/$(PROJECT).lst
 
 size: $(BINDIR)/$(PROJECT).elf
 	$(SIZE) $(BINDIR)/$(PROJECT).elf
@@ -59,7 +59,7 @@ size: $(BINDIR)/$(PROJECT).elf
 $(BINDIR)/$(PROJECT).hex: $(BINDIR)/$(PROJECT).elf
 	$(OBJCOPY) -R .stack -O ihex $(BINDIR)/$(PROJECT).elf $(BINDIR)/$(PROJECT).hex
 
-$(BINDIR)/$(PROJECT).elf: $(OBJ)
+$(BINDIR)/$(PROJECT).elf: $(LSCRIPT) $(OBJ)
 	@mkdir -p $(dir $@)
 	$(CC) $(OBJ) $(LDFLAGS) -o $(BINDIR)/$(PROJECT).elf
 
