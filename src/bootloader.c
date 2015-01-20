@@ -38,7 +38,7 @@ void bootloader_run(void)
 
     while (len)
     {
-        *src = *dest;
+        *dest = *src;
         len--;
     }
 
