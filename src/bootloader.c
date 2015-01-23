@@ -5,6 +5,8 @@
  * The code for this section will appear in .bootloader* and .text. Any section
  * attributes should be placed on the declaration of the function, not the
  * definition so that I can easily figure out what is where.
+ * The one exception is bootloader_run which needs to live in .bootstrap so that
+ * it can act as a bridge between .text and .bootloader
  */
 
 #include "arm_cm0p.h"
@@ -40,14 +42,19 @@ extern uint32_t __bootloader_interrupt_vector_table;
 static void __attribute__ ((section(".bootloader"))) bootloader_main(void);
 
 /**
+ * Initializes the USB driver
+ */
+static void __attribute__ ((section(".bootloader"))) bootloader_usb_init(void);
+
+/**
  * Transmits data via endpoint 0
  */
 static void __attribute__ ((section(".bootloader"))) bootloader_usb_endp0_transmit(const void* data, uint8_t length);
 
 /**
- * Initializes the USB driver
+ * Handles a setup request for endpoint 0
  */
-static void __attribute__ ((section(".bootloader"))) bootloader_usb_init(void);
+static void __attribute__ ((section(".bootloader"))) usb_endp0_handle_setup(setup_t* packet);
 
 /**
  * Handles USB endpoint 0 tokens
@@ -73,7 +80,87 @@ static uint8_t endp0_rx[2][ENDP0_SIZE];;
 __attribute__ ((section(".bootloader.data"), aligned(512), used))
 static bdt_t bdt_table[(USB_N_ENDPOINTS + 1) * 4];
 
-void bootloader_run(void)
+/**
+ * Device descriptor
+ * NOTE: This cannot be const because without additional attributes, it will
+ * not be placed in a part of memory that the usb subsystem can access. I
+ * have a suspicion that this location is somewhere in flash, but not copied
+ * to RAM.
+ */
+__attribute__ ((section(".bootloader.data")))
+static dev_descriptor_t dev_descriptor = {
+    .bLength = 18,
+    .bDescriptorType = 1,
+    .bcdUSB = 0x0200,
+    .bDeviceClass = 0xff,
+    .bDeviceSubClass = 0x0,
+    .bDeviceProtocol = 0x0,
+    .bMaxPacketSize0 = ENDP0_SIZE,
+    .idVendor = 0x16c0,
+    .idProduct = 0x05dc,
+    .bcdDevice = 0x0001,
+    .iManufacturer = 1,
+    .iProduct = 0,
+    .iSerialNumber = 0,
+    .bNumConfigurations = 1
+};
+
+/**
+ * Configuration descriptor
+ * NOTE: Same thing about const applies here
+ */
+__attribute__ ((section(".bootloader.data")))
+static cfg_descriptor_t cfg_descriptor = {
+    .bLength = 9,
+    .bDescriptorType = 2,
+    .wTotalLength = 18,
+    .bNumInterfaces = 1,
+    .bConfigurationValue = 1,
+    .iConfiguration = 0,
+    .bmAttributes = 0x80,
+    .bMaxPower = 250,
+    .interfaces = {
+        {
+            .bLength = 9,
+            .bDescriptorType = 4,
+            .bInterfaceNumber = 0,
+            .bAlternateSetting = 0,
+            .bNumEndpoints = 0,
+            .bInterfaceClass = 0xff,
+            .bInterfaceSubClass = 0x0,
+            .bInterfaceProtocol = 0x0,
+            .iInterface = 0
+        }
+    }
+};
+
+__attribute__ ((section(".bootloader.data")))
+static str_descriptor_t lang_descriptor = {
+    .bLength = 4,
+    .bDescriptorType = 3,
+    .wString = { 0x0409 } //english (US)
+};
+
+__attribute__ ((section(".bootloader.data")))
+static str_descriptor_t manuf_descriptor = {
+    .bLength = 2 + 4 * 2,
+    .bDescriptorType = 3,
+    .wString = {'a','s','d','f'}
+};
+
+/**
+ * Descriptor table
+ */
+__attribute__ ((section(".bootloader.data")))
+static descriptor_entry_t descriptors[] = {
+    { 0x0100, 0x0000, &dev_descriptor, sizeof(dev_descriptor) },
+    { 0x0200, 0x0000, &cfg_descriptor, 18 },
+    { 0x0300, 0x0000, &lang_descriptor, 4 },
+    { 0x0301, 0x0409, &manuf_descriptor, 10 },
+    { 0x0000, 0x0000, NULL, 0 }
+};
+
+void __attribute__ ((section(".bootstrap"))) bootloader_run(void)
 {
     //Start by copying the bootloader and its data into RAM
     //NOTE: This possibly destroys all .data and .bss
@@ -114,17 +201,6 @@ static void bootloader_main(void)
 {
     //initialize the USB module
     bootloader_usb_init();
-}
-
-__attribute__ ((section(".bootloader.data")))
-static uint8_t endp0_odd, endp0_data = 0;
-static void bootloader_usb_endp0_transmit(const void* data, uint8_t length)
-{
-    bdt_table[BDT_INDEX(0, TX, endp0_odd)].addr = (void *)data;
-    bdt_table[BDT_INDEX(0, TX, endp0_odd)].desc = BDT_DESC(length, endp0_data);
-    //toggle the odd and data bits
-    endp0_odd ^= 1;
-    endp0_data ^= 1;
 }
 
 static void bootloader_usb_init(void)
@@ -171,9 +247,110 @@ static void bootloader_usb_init(void)
     USB0_CONTROL = USB_CONTROL_DPPULLUPNONOTG_MASK;
 }
 
+__attribute__ ((section(".bootloader.data")))
+static uint8_t endp0_odd, endp0_data = 0;
+static void bootloader_usb_endp0_transmit(const void* data, uint8_t length)
+{
+    bdt_table[BDT_INDEX(0, TX, endp0_odd)].addr = (void *)data;
+    bdt_table[BDT_INDEX(0, TX, endp0_odd)].desc = BDT_DESC(length, endp0_data);
+    //toggle the odd and data bits
+    endp0_odd ^= 1;
+    endp0_data ^= 1;
+}
+
+/**
+ * Endpoint 0 setup handler
+ */
+static void usb_endp0_handle_setup(setup_t* packet)
+{
+    const descriptor_entry_t* entry;
+    const uint8_t* data = NULL;
+    uint8_t data_length = 0;
+
+
+    switch(packet->wRequestAndType)
+    {
+    case 0x0500: //set address (wait for IN packet)
+        break;
+    case 0x0900: //set configuration
+        //we only have one configuration at this time
+        break;
+    case 0x0680: //get descriptor
+    case 0x0681:
+        for (entry = descriptors; 1; entry++)
+        {
+            if (entry->addr == NULL)
+                break;
+
+            if (packet->wValue == entry->wValue && packet->wIndex == entry->wIndex)
+            {
+                //this is the descriptor to send
+                data = entry->addr;
+                data_length = entry->length;
+                goto send;
+            }
+        }
+        goto stall;
+        break;
+    default:
+        goto stall;
+    }
+
+    //if we are sent here, we need to send some data
+    send:
+        if (data_length > packet->wLength)
+            data_length = packet->wLength;
+        bootloader_usb_endp0_transmit(data, data_length);
+        return;
+
+    //if we make it here, we are not able to send data and have stalled
+    stall:
+        USB0_ENDPT0 = USB_ENDPT_EPSTALL_MASK | USB_ENDPT_EPRXEN_MASK | USB_ENDPT_EPTXEN_MASK | USB_ENDPT_EPHSHK_MASK;
+}
+
 static void bootloader_usb_endp0_handler(uint8_t stat)
 {
+    __attribute__ ((section(".bootloader.data")))
+    static setup_t last_setup;
 
+    //determine which bdt we are looking at here
+    bdt_t* bdt = &bdt_table[BDT_INDEX(0, (stat & USB_STAT_TX_MASK) >> USB_STAT_TX_SHIFT, (stat & USB_STAT_ODD_MASK) >> USB_STAT_ODD_SHIFT)];
+
+    switch (BDT_PID(bdt->desc))
+    {
+    case PID_SETUP:
+        //extract the setup token
+		last_setup = *((setup_t*)(bdt->addr));
+
+		//we are now done with the buffer
+        bdt->desc = BDT_DESC(ENDP0_SIZE, 1);
+
+        //clear any pending IN stuff
+        bdt_table[BDT_INDEX(0, TX, EVEN)].desc = 0;
+		bdt_table[BDT_INDEX(0, TX, ODD)].desc = 0;
+        endp0_data = 1;
+
+        //cast the data into our setup type and run the setup
+        usb_endp0_handle_setup(&last_setup);//&last_setup);
+
+        //unfreeze this endpoint
+        USB0_CTL = USB_CTL_USBENSOFEN_MASK;
+        break;
+    case PID_IN:
+        if (last_setup.wRequestAndType == 0x0500)
+        {
+            USB0_ADDR = last_setup.wValue;
+        }
+        break;
+    case PID_OUT:
+        //nothing to do here..just give the buffer back
+        bdt->desc = BDT_DESC(ENDP0_SIZE, 1);
+        break;
+    case PID_SOF:
+        break;
+    }
+
+    USB0_CTL = USB_CTL_USBENSOFEN_MASK;
 }
 
 void bootloader_USB_IRQHandler(void)

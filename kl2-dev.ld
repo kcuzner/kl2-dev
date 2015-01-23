@@ -41,14 +41,18 @@ EXTERN(__flash_config);
  * Prevent the bootloader from accessing the sections that it lives on top of
  */
 
+NOCROSSREFS(.bootloader .text);
 NOCROSSREFS(.bootloader .data);
 NOCROSSREFS(.bootloader .bss);
 
 SECTIONS
 {
-    .text :
+    /**
+     * The bootstrap section contains code which can access the bootloader
+     * and serves as a bridge between .text and .bootloader
+     */
+    .bootstrap :
     {
-        CREATE_OBJECT_SYMBOLS
         /* Insert the interrupt vector table first */
         __interrupt_vector_table = .;
         *(.interrupt_vector_table)
@@ -60,6 +64,15 @@ SECTIONS
 
         /* Startup assembly */
         *(.startup)
+        *(.bootstrap)
+    } >flash
+
+    /**
+     * .text contains exactly what you would expect
+     */
+    .text :
+    {
+        CREATE_OBJECT_SYMBOLS
 
         /* Rest of the code (C) */
         *(.text)

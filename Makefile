@@ -25,7 +25,7 @@ INCLUDE = -I$(INCDIR)
 LSCRIPT = kl2-dev.ld
 
 # C Flags
-GCFLAGS  = -Wall -fno-common -mthumb -mcpu=$(CPU) -O3
+GCFLAGS  = -Wall -fno-common -mthumb -mcpu=$(CPU) -Os
 GCFLAGS += $(INCLUDE)
 LDFLAGS += -nostartfiles -T$(LSCRIPT) -mthumb -mcpu=$(CPU)
 ASFLAGS += -mcpu=$(CPU)
@@ -71,6 +71,10 @@ clean:
 	$(RM) $(OBJDIR)
 
 # Compilation
+$(OBJDIR)/bootloader.o: $(SRCDIR)/bootloader.c
+	@mkdir -p $(dir $@)
+	$(CC) $(GCFLAGS) -ffreestanding -fno-builtin -nodefaultlibs -nostdlib -c $< -o $@
+
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(GCFLAGS) -c $< -o $@

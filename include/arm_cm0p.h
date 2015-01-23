@@ -31,6 +31,13 @@ typedef volatile uint8		vuint8;  /*  8 bits */
 typedef volatile uint16		vuint16; /* 16 bits */
 typedef volatile uint32		vuint32; /* 32 bits */
 
+/*
+ * Common defines
+ */
+#define NULL 0
+#define FALSE 0
+#define TRUE 1
+
 /**
  * Clock setup
  */

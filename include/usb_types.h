@@ -13,17 +13,23 @@
 #define PID_SOF   0x5
 #define PID_SETUP 0xd
 
-typedef struct {
-    union {
-        struct {
-            uint8_t bmRequestType;
-            uint8_t bRequest;
-        };
-        uint16_t wRequestAndType;
+typedef union {
+    struct { /* This struct with two words is unioned to avoid a memcpy. Somehow it avoids it...I'm not sure why */
+        uint32_t word0;
+        uint32_t word1;
     };
-    uint16_t wValue;
-    uint16_t wIndex;
-    uint16_t wLength;
+    struct {
+        union {
+            struct {
+                uint8_t bmRequestType;
+                uint8_t bRequest;
+            };
+            uint16_t wRequestAndType;
+        };
+        uint16_t wValue;
+        uint16_t wIndex;
+        uint16_t wLength;
+    };
 } setup_t;
 
 typedef struct {
