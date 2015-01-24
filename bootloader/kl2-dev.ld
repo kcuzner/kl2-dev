@@ -37,22 +37,14 @@ TOTAL_RESERVED_HEAP = 0;
 EXTERN(__interrupt_vector_table);
 EXTERN(__flash_config);
 
-/**
- * Prevent the bootloader from accessing the sections that it lives on top of
- */
-
-NOCROSSREFS(.bootloader .text);
-NOCROSSREFS(.bootloader .data);
-NOCROSSREFS(.bootloader .bss);
-
 SECTIONS
 {
     /**
-     * The bootstrap section contains code which can access the bootloader
-     * and serves as a bridge between .text and .bootloader
+     * .text contains exactly what you would expect
      */
-    .bootstrap :
+    .text :
     {
+        CREATE_OBJECT_SYMBOLS
         /* Insert the interrupt vector table first */
         __interrupt_vector_table = .;
         *(.interrupt_vector_table)
@@ -65,14 +57,6 @@ SECTIONS
         /* Startup assembly */
         *(.startup)
         *(.bootstrap)
-    } >flash
-
-    /**
-     * .text contains exactly what you would expect
-     */
-    .text :
-    {
-        CREATE_OBJECT_SYMBOLS
 
         /* Rest of the code (C) */
         *(.text)
@@ -106,29 +90,8 @@ SECTIONS
      * In order to have the bootloader work properly, we need to start in the
      * ram rather than packing things using >sram
      */
-    . = ORIGIN(sram);
 
-    /**
-     * The bootloader and general ram live in the same area of memory
-     * NOTE: The bootloader gets its own special RAM space and it lives on top
-     * of both .data and .bss.
-     */
-
-    _shared_start = .;
-    .bootloader _shared_start : AT(_end_flash)
-    {
-        /* We keep the bootloader and its data together */
-        _start_bootloader_flash = LOADADDR(.bootloader);
-        _start_bootloader = .;
-        *(.bootloader.data)
-        *(.bootloader.data.*)
-        . = ALIGN(1024); /* Interrupt vector tables must be aligned to a 1024-byte boundary */
-        *(.bootloader.interrupt_vector_table)
-        *(.bootloader)
-        _end_bootloader = .;
-    }
-
-    .data _shared_start : AT(_end_flash + SIZEOF(.bootloader))
+    .data : AT(_end_flash)
     {
         _start_data_flash = LOADADDR(.data);
         _start_data = .;
@@ -136,9 +99,8 @@ SECTIONS
         *(.data.*)
         *(.shdata)
         _end_data = .;
-    }
-    . = _shared_start + SIZEOF (.data);
-    _bootloader_size = _end_bootloader - _start_bootloader;
+    } >sram
+
     _data_size = _end_data - _start_data;
 
     /**
@@ -161,13 +123,6 @@ SECTIONS
     PROVIDE(_end_bss = .);				/* make value of _end_bss available externally */
 
     bss_size = _end_bss - _start_bss;
-
-    /**
-     * The following section lives after bootstrap, data, and bss so that it can
-     * be shared between both the bootloader and the user program
-     */
-
-    . = MAX(., _shared_start + MAX(SIZEOF(.data), SIZEOF(.bootloader)));
 
     /*  From generic.ld, supplied by CodeSourcery  */
     /* .ARM.exidx is sorted, so has to go in its own output section.  */

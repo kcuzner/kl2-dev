@@ -7,8 +7,6 @@
 
 int main(void)
 {
-    bootloader_run();
-
     while(1) {}
     return 0;
 }

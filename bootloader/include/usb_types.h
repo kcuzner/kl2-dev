@@ -8,6 +8,8 @@
 #ifndef _USB_TYPES_H_
 #define _USB_TYPES_H_
 
+#include "arm_cm0p.h"
+
 #define PID_OUT   0x1
 #define PID_IN    0x9
 #define PID_SOF   0x5
