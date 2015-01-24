@@ -21,6 +21,7 @@
 		<Unit filename="include/bootloader.h" />
 		<Unit filename="include/common.h" />
 		<Unit filename="include/sysinit.h" />
+		<Unit filename="include/usb_types.h" />
 		<Unit filename="kl2-dev.ld" />
 		<Unit filename="src/arm_cm0p.c">
 			<Option compilerVar="CC" />
