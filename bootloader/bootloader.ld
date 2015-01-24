@@ -1,6 +1,7 @@
 /**
  * kl2-dev.ld
  * Generic Linker File for MKL26Z32VFM4-based projects
+ * Modified for the bootloader
  *
  * Kevin Cuzner
  */
@@ -14,11 +15,14 @@ ENTRY(_startup)
  *
  * SRAM is split into two regions, L and U with 1/4 allocated to L and 3/4
  * allocated to U. The origin for SRAM is calculated as 0x20000000-SIZE/4.
+ *
+ * This bootloader uses the first 4K of the 32K flash, so the flash size is set
+ * to 4K to enforce this limit.
  */
 MEMORY
 {
     sram (W!RX) : ORIGIN = 0x1ffffc00, LENGTH = 4K
-    flash (RX)  : ORIGIN = 0x00000000, LENGTH = 32K
+    flash (RX)  : ORIGIN = 0x00000000, LENGTH = 4K
 }
 
 /**
@@ -132,6 +136,15 @@ SECTIONS
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
     }
     PROVIDE_HIDDEN (__exidx_end = .);
+
+    /**
+     * Holds the maximum address the bootloader uses, for part of the mechanism
+     * which prevents the bootloader from erasing itself
+     */
+    .end :
+    {
+        _flash_end = .;
+    } >flash
 
     /**
      * END OF DATA, BEGINNING OF MAX STACK

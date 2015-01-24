@@ -22,7 +22,7 @@ ASM = $(wildcard $(SRCDIR)/*.S)
 INCLUDE = -I$(INCDIR)
 
 # Linker Script
-LSCRIPT = kl2-dev.ld
+LSCRIPT = bootloader.ld
 
 # C Flags
 GCFLAGS  = -Wall -fno-common -mthumb -mcpu=$(CPU) -Os

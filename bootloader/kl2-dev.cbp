@@ -16,20 +16,20 @@
 			</Target>
 		</Build>
 		<Unit filename="Makefile" />
+		<Unit filename="bootloader.ld" />
 		<Unit filename="include/MKL26Z4.h" />
 		<Unit filename="include/arm_cm0p.h" />
 		<Unit filename="include/bootloader.h" />
 		<Unit filename="include/common.h" />
 		<Unit filename="include/sysinit.h" />
+		<Unit filename="include/usb.h" />
 		<Unit filename="include/usb_types.h" />
-		<Unit filename="kl2-dev.ld" />
 		<Unit filename="src/arm_cm0p.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/bootloader.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src/bootloader_crt0.S" />
 		<Unit filename="src/crt0.S" />
 		<Unit filename="src/main.c">
 			<Option compilerVar="CC" />
@@ -38,6 +38,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/sysinit.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src/usb.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Extensions>

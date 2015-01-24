@@ -150,47 +150,6 @@ _startup:
     str r1, [r0]
 
     /**
-     * Clear BSS
-     */
-    ldr r0,=0
-    ldr r1, = _start_bss
-    ldr r2, = _end_bss
-    cmp	r1, r2
-    beq	_done_clear
-
-    subs r2, #1
-_clear:
-    cmp r1, r2
-    str r0, [r1, #0]
-    adds r1, #4
-    blo _clear
-_done_clear:
-
-    /**
-     *  Copy data from flash initialization area to RAM
-     *
-     *  The three values seen here are supplied by the linker script
-     */
-    ldr   r0, =_start_data_flash	/* initial values, found in flash */
-    ldr   r1, =_start_data			/* target locations in RAM to write */
-    ldr   r2, =_data_size			/* number of bytes to write */
-
-    /*
-     *  Perform the copy.
-     *  Handle the special case where _data_size == 0
-     */
-    cmp   r2, #0
-    beq   done_copy
-copy:
-    ldrb   r4, [r0]
-    adds   r0, r0, #1
-    strb   r4, [r1]
-    adds   r1, r1, #1
-    subs   r2, r2, #1
-    bne    copy
-done_copy:
-
-    /**
      * Configure vector table offset register
      * NOTE: I'm not sure if this is actually implemented
      */
@@ -199,7 +158,7 @@ done_copy:
     str r1, [r0]
 
     /**
-     * Hand off code to C initialization stuff
+     * Hand off code to C initialization stuff which does copying and zeroing
      */
     ldr r0,=startup
     blx r0
