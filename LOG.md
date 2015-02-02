@@ -97,5 +97,69 @@ I do this I am going to choose the part, find the REFERENCE MANUAL, find the
 headers, and then continue. This could have turned into a waste of money had I
 failed to locate any of those.
 
+### 02/02/2015
 
+In order to connect to the device to program the initial bootloader, I have been
+reading copious documentation on how exactly to do this thing. The KL26 only
+supports the SWD interface, which is fine. I am creating a rudimentary SWD-USB
+bridge and some control software so I can issue commands over USB.
+
+A decent reference for the SWD protocol:
+http://markdingst.blogspot.com/2014/03/programming-internal-sram-over-swd.html
+
+A good reference is in the ARM SW-DP documentation as well.
+
+The SWD has two main functions: DP (debug port), and AP (access port). The APnDP
+bit in any read/write is used to control which one is being accessed. The AP has
+a way to select which exact AP is being used via the SELECT register in the DP.
+The KL26 provides two AP's: The AHB-AP at SELECT\[31:24\] = 0x00 and the MDM-AP
+at SELECT\[31:24\] = 0x01.
+
+ * The AHB-AP is used to actually access the internal memory of the device and
+   the documentation is part of the CoreSight documentation which I have added
+   to the repo. This seems to be a standard AP.
+
+ * The MDM-AP is the KL26 way to request things such as debug halts, system
+   resets, and other things. The documentation for this module is found in
+   section 9.3 of the reference manual. This is a nonstandard AP.
+
+Each AP has a number of banks which provide sets of 4 registers used for
+interacting with the AP. The bank currently selected is done by some other
+bits in the DP SELECT register.
+
+It looks like my quest for programming the device needs to follow steps that
+are something like this:
+
+ 1. Build an SWD-USB bridge which can execute any SWD command and talk to the
+    device. Alternately, buy a programmer.
+ 2. Write a USB-based bootloader with associated host software that can
+    understand intel hex files and compile it with two linker scripts: one that
+    locates the program starting at 0x20000000 (inside RAM) and 0x00000000
+    (start of flash). The program should know where it lives and prevent writing
+    to that location.
+ 3. Use the SWD to write the RAM version of the bootloader to the internal
+    SRAM, set up the IVT to point to 0x20000000, and execute the program from
+    that location (set PC to address pointed to by 0x20000004 and run).
+ 4. With the device running the RAM bootloader, upload the flash bootloader
+    using the bootloader host software
+ 5. Voila! Initial programming complete.
+
+Yesterday, I started hooking up my USB-SWD bridge (built on the Teensy) to the
+device. I had two problems:
+
+ 1. The device did not respond. I believe my SWD implementation was transmitting
+    the JTAG->SWD transition word backwards. It also might have been doing
+    reads wrong. However, I'm not even sure if the SWD transition word is needed
+    since the device only supports SWD.
+ 2. When running the system with RESET_b floating, I observed some interesting
+    behavior caputured here: http://i.stack.imgur.com/62qti.png. I initially
+    thought it was stuck in some sort of boot loop. I read further (not sure
+    where) that the watchdog timer might be causing the device to reset. This
+    does match with my observed behavior since it starts un-resetting and then
+    suddenly drops into reset again. The watchdog timer is enabled by default
+    and on the K20 it needed to be turned off or changed within the first 256
+    clock cycles to avoid a reset. I need to measure the width of the un-reset
+    pulse to make sure, but that could be my problem. The width of the pulse
+    didn't change, but the period of the signal varied between 29Khz and 31Khz,
+    making for a very jittery image.
 
