@@ -163,3 +163,10 @@ device. I had two problems:
     didn't change, but the period of the signal varied between 29Khz and 31Khz,
     making for a very jittery image.
 
+### 12/12/2016
+
+Finally some success!! I have managed to finally program one of the KL26 devices
+using openocd and the raspberrypi-native interface. Ideally I would have liked
+to get the Teensy functioning as an interface, but this seems to work. I suspect
+that any low-level openocd interface could be used to program this thing.
+

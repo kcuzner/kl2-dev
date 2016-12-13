@@ -7,6 +7,12 @@
 
 int main(void)
 {
-    while(1) {}
+    SIM_SCGC5 |= SIM_SCGC5_PORTD_MASK;
+    PORTD_PCR7 = PORT_PCR_MUX(1);
+    GPIOD_PDDR = 1 << 7;
+
+    while(1) {
+        GPIOD_PTOR = 1 << 7;
+    }
     return 0;
 }
